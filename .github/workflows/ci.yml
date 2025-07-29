@@ -1,0 +1,37 @@
+name: Python CI with uv
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust (for uv)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install uv
+        run: cargo install uv
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'  # or whatever you use
+
+      - name: Install dependencies with uv
+        run: |
+          uv venv
+          source .venv/bin/activate
+          uv pip install -r requirements.txt  # or `uv pip install .` if using pyproject
+
+      - name: Run tests
+        run: |
+          source .venv/bin/activate
+          pytest  # or your test runner of choice
+
